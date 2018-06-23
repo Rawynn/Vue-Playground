@@ -45,11 +45,14 @@ Vue.component('product', {
 
 			<button v-on:click="addToCart" 
 			:disabled="!inStock"
-			:class="{ disabledButton: !inStock}">Add to cart</button>
+			:class="{ disabledButton: !inStock}">
+				Add to cart
+			</button>
 
-			<div class="cart">
-				<p>Cart ({{ cart }})</p>
-			</div>
+			<button @click="removeFromCart">
+            	Remove from cart
+            </button>
+
 
 		</div>
 		
@@ -79,24 +82,19 @@ Vue.component('product', {
 				}
 			],
 			sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-			cart: 0
+			
 		}
 	},
 	methods: {
 		addToCart: function() {
-			this.cart += 1
+			this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId)
 		},
+		removeFromCart: function() {
+             this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId)
+        },
 		updateProduct: function(index){
 			this.selectedVariant = index
 		}
-		/* not all browsers support this
-		addToCart() {
-			this.cart += 1
-		},
-		updateProduct(variantImage){
-			this.image = variantImage
-		}
-		*/
 	},
 	computed: {
 		title() {
@@ -127,6 +125,19 @@ Vue.component('product', {
 var app = new Vue({
 	el: '#app',
 	data: {
-		premium: true
+		premium: true,
+		cart: []
+	},
+	methods: {
+		updateCart(id) {
+			this.cart.push(id)
+		},
+		removeItem(id) {
+          for(var i = this.cart.length - 1; i >= 0; i--) {
+            if (this.cart[i] === id) {
+               this.cart.splice(i, 1);
+            }
+          }
+        }
 	}
 })
